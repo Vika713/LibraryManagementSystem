@@ -1,0 +1,99 @@
+﻿@model Web.ViewModels.BookItems.BookItemDeleteViewModel
+
+@{
+    ViewData["Title"] = ViewResource.DeleteBookItem;
+}
+
+<h1>@ViewResource.Delete</h1>
+
+<h4>@ViewResource.BookItem</h4>
+<hr />
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ISBN)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ISBN)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Barcode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Barcode)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PublicationDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PublicationDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DateOfPurchase)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DateOfPurchase)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Format)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Format)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RackNumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.RackNumber)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LocationIdentifier)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LocationIdentifier)
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <form asp-action="@nameof(MVC.BookItems.Delete)">
+        <input type="hidden" asp-for="BookItemId" />
+        <input type="hidden" asp-for="BookId" />
+        <input type="hidden" asp-for="ISBN" />
+        <input type="hidden" asp-for="Barcode" />
+        <input type="hidden" asp-for="PublicationDate" />
+        <input type="hidden" asp-for="Price" />
+        <input type="hidden" asp-for="DateOfPurchase" />
+        <input type="hidden" asp-for="Format" />
+        <input type="hidden" asp-for="RackNumber" />
+        <input type="hidden" asp-for="LocationIdentifier" />
+        <input type="hidden" asp-for="Status" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+        <input type="submit" value="@ViewResource.Delete" class="btn btn-danger" />
+    </form>
+</div>
+
+<hr />
+
+<div>
+    <a asp-controller="@nameof(MVC.Books)" asp-action="@nameof(MVC.Books.Index)">@ViewResource.Books</a> |
+    <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.Index)" asp-route-id="@Model.BookId">@ViewResource.BookItems</a> |
+    <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.Details)" asp-route-id="@Model.BookItemId">@ViewResource.Details</a>
+    @if (Model.HasOtherBookItems == true)
+    {
+        @:|
+        <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.IndexByBook)" asp-route-id="@Model.BookId">@ViewResource.OtherBookItems</a>
+    }
+</div>

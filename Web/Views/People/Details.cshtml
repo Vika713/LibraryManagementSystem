@@ -1,0 +1,148 @@
+﻿@model Web.ViewModels.People.PersonDetailsViewModel
+
+@{
+    ViewData["Title"] = ViewResource.PersonDetails;
+}
+
+<h1>@ViewResource.Details</h1>
+
+<h4>@ViewResource.Person</h4>
+<hr />
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PersonalCode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PersonalCode)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StreetAddress)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StreetAddress)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.City)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.City)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.State)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.State)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ZipCode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ZipCode)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Country)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Country)
+        </dd>
+        @if (Model.MemberId != null)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.MemberCode)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.MemberCode)
+            </dd>
+            @if (Model.CardNumber != null)
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.CardNumber)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.CardNumber)
+                </dd>
+            }
+        }
+        @if (Model.LibrarianId != null)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.LibrarianCode)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.LibrarianCode)
+            </dd>
+        }
+    </dl>
+</div>
+
+<hr />
+
+<div>
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model.Id, OperationAuthorizationRequirements.PersonEdit)).Succeeded)
+    {
+        <a asp-action="@nameof(MVC.People.Edit)" asp-route-id="@Model.Id">@ViewResource.Edit</a>
+    }
+
+    @if ((User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin)) && Model.MemberId != null)
+    {
+        @if ((await AuthorizationService.AuthorizeAsync(User, Model.Id, OperationAuthorizationRequirements.PersonEdit)).Succeeded)
+        {
+            @:|
+        }
+        <a asp-controller="@nameof(MVC.Cards)" asp-action="@nameof(MVC.Cards.Create)" asp-route-id="@Model.MemberId">@ViewResource.AddACard</a>
+    }
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model.MemberId, OperationAuthorizationRequirements.CardBlock)).Succeeded &&
+Model.CardNumber != null)
+    {
+        if ((await AuthorizationService.AuthorizeAsync(User, Model.Id, OperationAuthorizationRequirements.PersonEdit)).Succeeded ||
+            ((User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin)) && Model.MemberId != null))
+        {
+            @:|
+        }
+        <a asp-controller="@nameof(MVC.Cards)" asp-action="@nameof(MVC.Cards.Block)" asp-route-id="@Model.MemberId">@ViewResource.BlockACard</a>
+    }
+    <br />
+    @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+    {
+        <a asp-action="@nameof(MVC.People.Index)">@ViewResource.People</a>
+    }
+
+    @if (Model.MemberId != null)
+    {
+        @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+        {
+            @:|
+        }
+        <a asp-controller="@nameof(MVC.Members)" asp-action="@nameof(MVC.Members.Details)" asp-route-id="@Model.MemberId">@ViewResource.MemberDetails</a>
+    }
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model.LibrarianId, OperationAuthorizationRequirements.LibrarianDetails)).Succeeded &&
+Model.LibrarianId != null)
+    {
+        if ((User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin)) || Model.MemberId != null)
+        {
+            @:|
+        }
+        <a asp-controller="@nameof(MVC.Librarians)" asp-action="@nameof(MVC.Librarians.Details)" asp-route-id="@Model.LibrarianId">@ViewResource.LibrarianDetails</a>
+    }
+</div>

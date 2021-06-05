@@ -1,0 +1,156 @@
+﻿@model Web.ViewModels.BookItems.BookItemsIndexViewModel
+
+@{
+    ViewData["Title"] = ViewResource.BookItems;
+}
+
+<h1>@ViewResource.Index</h1>
+
+<p>
+    @ViewResource.PageSize
+    @Html.DropDownList(
+        "pageSize", Model.PageSizes as List<SelectListItem>,
+        new
+        {
+            onchange = "SelectionChanged()",
+            id = "pageSize"
+        })
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Barcode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].ISBN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].AuthorsNames)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Subject)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Publisher)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Language)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].NumberOfPages)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].PublicationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Format)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Status)
+            </th>
+            <th>
+                @Html.DisplayName(ViewResource.Location)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Index)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Barcode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ISBN)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @foreach (var author in item.AuthorsNames)
+                    {
+                        @Html.DisplayFor(modelItem => author)
+                        if (author.Equals(item.AuthorsNames.Last()) == false)
+                        {
+                            <br>
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Subject)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publisher)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Language)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberOfPages)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublicationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Format)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LocationIdentifier)
+                    @Html.DisplayFor(modelItem => item.RackNumber)
+                </td>
+                <td>
+                    <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.Edit)" asp-route-id="@item.BookItemId">@ViewResource.Edit</a> |
+                    <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.Details)" asp-route-id="@item.BookItemId">@ViewResource.Details</a>
+                    @if (item.Status != BookStatus.Loaned)
+                    {
+                        @:|
+                        <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.Delete)" asp-route-id="@item.BookItemId">@ViewResource.Delete</a>
+                    }
+                    @if (item.IsReserved)
+                    {
+                        @:|
+                        <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.CancelReservation)" asp-route-id="@item.BookItemId">@ViewResource.CancelReservation</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="@nameof(MVC.BookItems.IndexByRack)"
+   asp-route-id="@Model.Index[0].RackId"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-pageSize="@(Model.PageSize)"
+   class="btn btn-default @prevDisabled">
+    @ViewResource.Previous
+</a>
+<a asp-action="@nameof(MVC.BookItems.IndexByRack)"
+   asp-route-id="@Model.Index[0].RackId"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-pageSize="@(Model.PageSize)"
+   class="btn btn-default @nextDisabled">
+    @ViewResource.Next
+</a>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+         function SelectionChanged()
+         {
+             window.location = '@Url.Action(nameof(MVC.BookItems.IndexByRack), nameof(MVC.BookItems))'  + '?pageSize=' + $("#pageSize").val();
+         }
+    </script>
+}

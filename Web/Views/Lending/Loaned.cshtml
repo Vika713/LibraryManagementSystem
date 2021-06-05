@@ -1,0 +1,13 @@
+﻿@model Web.ViewModels.Lending.DueDateViewModel
+
+@{
+    ViewData["Title"] = ViewResource.LendingMessage;
+}
+
+<h4>@ViewResource.BookLoanedUntil @Html.DisplayFor(model => model.DueDate)</h4>
+
+<hr />
+
+<div>
+    <a asp-controller="@nameof(MVC.Home)" asp-action="@nameof(MVC.Home.LendingMenu)">@ViewResource.BackToMenu</a>
+</div>

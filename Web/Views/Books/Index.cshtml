@@ -1,0 +1,221 @@
+﻿@model Web.ViewModels.Books.BooksIndexViewModel
+
+@{
+    ViewData["Title"] = ViewResource.Books;
+}
+
+<h1>@ViewResource.Index</h1>
+
+@if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+{
+    <p>
+        <a asp-action="@nameof(MVC.Books.Create)">@ViewResource.CreateNew</a>
+    </p>
+}
+
+<form asp-action="@nameof(MVC.Books.Index)" method="get">
+    <div class="form-actions no-color">
+        <p>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TitleFilter" class="control-label"></label>
+                <input asp-for="TitleFilter" class="form-control" />
+                <span asp-validation-for="TitleFilter" class="text-danger"></span>
+                <a asp-route-TitleFilter="@(Model.TitleFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="AuthorFilter" class="control-label"></label>
+                <input asp-for="AuthorFilter" class="form-control" />
+                <span asp-validation-for="AuthorFilter" class="text-danger"></span>
+                <a asp-route-AuthorFilter="@(Model.AuthorFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubjectFilter" class="control-label"></label>
+                <input asp-for="SubjectFilter" class="form-control" />
+                <span asp-validation-for="SubjectFilter" class="text-danger"></span>
+                <a asp-route-SubjectFilter="@(Model.SubjectFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="PublicationDateFilter" class="control-label"></label>
+                <input asp-for="PublicationDateFilter" class="form-control" />
+                <span asp-validation-for="PublicationDateFilter" class="text-danger"></span>
+                <a asp-route-PublicationDateFilter="@(Model.PublicationDateFilter)"></a>
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="PageSize" />
+                <a asp-route-PageSize="@(Model.PageSize)"></a>
+            </div>
+            <input type="submit" value="@ViewResource.Filter" class="btn btn-secondary" />
+        </p>
+    </div>
+</form>
+
+<p>
+    @ViewResource.PageSize
+    @Html.DropDownList(
+        "pageSize", Model.PageSizes as List<SelectListItem>,
+        new
+        {
+            onchange = "SelectionChanged()",
+            pageSize = "pageSize"
+        })
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].ISBN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].AuthorsNames)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Subject)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Publisher)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Language)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].NumberOfPages)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].PublicationDates)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Index)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ISBN)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @if (item.AuthorsNames != null && item.AuthorsNames.Any())
+                    {
+                        @foreach (var author in item.AuthorsNames)
+                        {
+                            @Html.DisplayFor(modelItem => author)
+                            <br />
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Subject)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publisher)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Language)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberOfPages)
+                </td>
+                <td>
+                    @if (item.PublicationDates != null && item.PublicationDates.Any())
+                    {
+                        @foreach (var date in item.PublicationDates)
+                        {
+                            @Html.DisplayFor(modelItem => date.Value)
+                            if (date.Value != null)
+                            {
+                                @:<br />
+                            }
+
+                        }
+                    }
+                </td>
+                <td>
+                    @if (item.HasBookItems == true)
+                    {
+                        <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.IndexByBook)" asp-route-id="@item.BookId">@ViewResource.BookItems</a>
+                    }
+                    @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+                    {
+                        @if (item.HasBookItems == true)
+                        {
+                            @:|
+                        }
+                        <a asp-action="@nameof(MVC.Books.Edit)" asp-route-id="@item.BookId">@ViewResource.Edit</a>
+                        @if (item.HasBookItems == false)
+                        {
+                            @:|
+                            <a asp-action="@nameof(MVC.Books.Delete)" asp-route-id="@item.BookId">@ViewResource.Delete</a>
+                        }
+                        @:|
+                        <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.Create)" asp-route-id="@item.BookId">@ViewResource.CreateBookItem</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="@nameof(MVC.Books.Index)" method="get"
+   asp-route-TitleFilter="@(Model.TitleFilter)"
+   asp-route-AuthorFilter="@(Model.AuthorFilter)"
+   asp-route-SubjectFilter="@(Model.SubjectFilter)"
+   asp-route-PublicationDateFilter="@(Model.PublicationDateFilter)"
+   asp-route-PageNumber="@(Model.PageIndex - 1)"
+   asp-route-PageSize="@(Model.PageSize)"
+   class="btn btn-default @prevDisabled">
+    @ViewResource.Previous
+</a>
+
+<a asp-action="@nameof(MVC.Books.Index)" method="get"
+   asp-route-TitleFilter="@(Model.TitleFilter)"
+   asp-route-AuthorFilter="@(Model.AuthorFilter)"
+   asp-route-SubjectFilter="@(Model.SubjectFilter)"
+   asp-route-PublicationDateFilter="@(Model.PublicationDateFilter)"
+   asp-route-PageNumber="@(Model.PageIndex + 1)"
+   asp-route-PageSize="@(Model.PageSize)"
+   class="btn btn-default @nextDisabled">
+    @ViewResource.Next
+</a>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @if (Model.TitleFilter == null &&
+Model.AuthorFilter == null &&
+Model.SubjectFilter == null &&
+Model.PublicationDateFilter == null)
+    {
+        <script>
+
+             function SelectionChanged()
+             {
+                 window.location = '@Url.Action(nameof(MVC.Books.Index), nameof(MVC.Books))' +
+                         '?PageSize=' + $("#pageSize").val();
+             }
+        </script>
+    }
+    else
+    {
+        <script>
+
+             function SelectionChanged()
+             {
+                     window.location = '@Url.Action(nameof(MVC.Books.Index), nameof(MVC.Books),
+                new { Model.TitleFilter, Model.AuthorFilter, Model.SubjectFilter, Model.PublicationDateFilter })' +
+                     '&PageSize=' + $("#pageSize").val();
+             }
+        </script>
+    }
+}

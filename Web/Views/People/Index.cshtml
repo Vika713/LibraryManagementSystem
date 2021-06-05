@@ -1,0 +1,210 @@
+﻿@model Web.ViewModels.People.PeopleIndexViewModel
+
+@{
+    ViewData["Title"] = ViewResource.Index;
+}
+
+<h1>@ViewResource.People</h1>
+
+<p>
+    <a asp-action="@nameof(MVC.People.Create)">@ViewResource.CreateNew</a>
+</p>
+
+<form asp-action="@nameof(MVC.People.Index)" method="get">
+    <div class="form-actions no-color">
+        <p>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="PersonalCodeFilter" class="control-label"></label>
+                <input asp-for="PersonalCodeFilter" class="form-control" />
+                <span asp-validation-for="PersonalCodeFilter" class="text-danger"></span>
+                <a asp-route-PersonalCodeFilter="@(Model.PersonalCodeFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailFilter" class="control-label"></label>
+                <input asp-for="EmailFilter" class="form-control" />
+                <span asp-validation-for="EmailFilter" class="text-danger"></span>
+                <a asp-route-EmailFilter="@(Model.EmailFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="MemberCodeFilter" class="control-label"></label>
+                <input asp-for="MemberCodeFilter" class="form-control" />
+                <span asp-validation-for="MemberCodeFilter" class="text-danger"></span>
+                <a asp-route-MemberIdFilter="@(Model.MemberCodeFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardNumberFilter" class="control-label"></label>
+                <input asp-for="CardNumberFilter" class="form-control" />
+                <span asp-validation-for="CardNumberFilter" class="text-danger"></span>
+                <a asp-route-CardNumberFilter="@(Model.CardNumberFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="LibrarianCodeFilter" class="control-label"></label>
+                <input asp-for="LibrarianCodeFilter" class="form-control" />
+                <span asp-validation-for="LibrarianCodeFilter" class="text-danger"></span>
+                <a asp-route-LibrarianIdFilter="@(Model.LibrarianCodeFilter)"></a>
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="PageSize" />
+                <a asp-route-PageSize="@(Model.PageSize)"></a>
+            </div>
+            <input type="submit" value="@ViewResource.Filter" class="btn btn-secondary" />
+        </p>
+    </div>
+</form>
+
+<p>
+    @ViewResource.PageSize
+    @Html.DropDownList(
+        "pageSize", Model.PageSizes as List<SelectListItem>,
+        new
+        {
+            onchange = "SelectionChanged()",
+            pageSize = "pageSize"
+        })
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].MemberCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].CardNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].LibrarianCode)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Index)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MemberCode)
+                </td>
+                <td>
+                    @if (item.CardNumber != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.CardNumber)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LibrarianCode)
+                </td>
+                <td>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, item.Id, OperationAuthorizationRequirements.PersonEdit)).Succeeded)
+                    {
+                        <a asp-action="@nameof(MVC.People.Edit)" asp-route-id="@item.Id">@ViewResource.Edit</a>
+                    }
+
+                    @if ((await AuthorizationService.AuthorizeAsync(User, item.Id, OperationAuthorizationRequirements.PersonDetails)).Succeeded)
+                    {
+                        @:|
+                        <a asp-action="@nameof(MVC.People.Details)" asp-route-id="@item.Id">@ViewResource.Details</a>
+                    }
+                    @if (item.MemberId != null)
+                    {
+                        if ((await AuthorizationService.AuthorizeAsync(User, item.Id, OperationAuthorizationRequirements.PersonEdit)).Succeeded || (await AuthorizationService.AuthorizeAsync(User, item.Id, OperationAuthorizationRequirements.PersonDetails)).Succeeded)
+                        {
+                            @:|
+                        }
+                        <a asp-controller="@nameof(MVC.Members)" asp-action="@nameof(MVC.Members.Details)" asp-route-id="@item.MemberId">@ViewResource.MemberDetails</a> @:|
+                        <a asp-controller="@nameof(MVC.Cards)" asp-action="@nameof(MVC.Cards.Create)" asp-route-id="@item.MemberId">@ViewResource.AddACard</a>
+                    }
+                    @if (item.CardNumber != null)
+                    {
+                        @:|
+                        <a asp-controller="@nameof(MVC.Cards)" asp-action="@nameof(MVC.Cards.Block)" asp-route-id="@item.MemberId">@ViewResource.BlockACard</a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, item.LibrarianId, OperationAuthorizationRequirements.LibrarianDetails)).Succeeded &&
+                    item.LibrarianId != null)
+                    {
+                        @:|
+                        <a asp-controller="@nameof(MVC.Librarians)" asp-action="@nameof(MVC.Librarians.Details)" asp-route-id="@item.LibrarianId">@ViewResource.LibrarianDetails</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="@nameof(MVC.People.Index)" method="get"
+   asp-route-PersonalCodeFilter="@(Model.PersonalCodeFilter)"
+   asp-route-EmailFilter="@(Model.EmailFilter)"
+   asp-route-MemberIdFilter="@(Model.MemberCodeFilter)"
+   asp-route-CardNumberFilter="@(Model.CardNumberFilter)"
+   asp-route-LibrarianIdFilter="@(Model.LibrarianCodeFilter)"
+   asp-route-PageNumber="@(Model.PageIndex - 1)"
+   asp-route-PageSize="@(Model.PageSize)"
+   class="btn btn-default @prevDisabled">
+    @ViewResource.Previous
+</a>
+
+<a asp-action="@nameof(MVC.People.Index)" method="get"
+   asp-route-PersonalCodeFilter="@(Model.PersonalCodeFilter)"
+   asp-route-EmailFilter="@(Model.EmailFilter)"
+   asp-route-MemberIdFilter="@(Model.MemberCodeFilter)"
+   asp-route-CardNumberFilter="@(Model.CardNumberFilter)"
+   asp-route-LibrarianIdFilter="@(Model.LibrarianCodeFilter)"
+   asp-route-PageNumber="@(Model.PageIndex + 1)"
+   asp-route-PageSize="@(Model.PageSize)"
+   class="btn btn-default @nextDisabled">
+    @ViewResource.Next
+</a>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @if (Model.PersonalCodeFilter == null &&
+Model.EmailFilter == null &&
+Model.MemberCodeFilter == null &&
+Model.CardNumberFilter == null &&
+Model.LibrarianCodeFilter == null)
+    {
+        <script>
+
+             function SelectionChanged()
+             {
+                 window.location = '@Url.Action(nameof(MVC.People.Index), nameof(MVC.People))' +
+                         '?PageSize=' + $("#pageSize").val();
+             }
+        </script>
+    }
+    else
+    {
+        <script>
+
+             function SelectionChanged()
+             {
+                     window.location = '@Url.Action(nameof(MVC.People.Index), nameof(MVC.People),
+                new { Model.PersonalCodeFilter,
+                    Model.EmailFilter,
+                    Model.MemberCodeFilter,
+                    Model.CardNumberFilter,
+                    Model.LibrarianCodeFilter })' +
+                     '&PageSize=' + $("#pageSize").val();
+             }
+        </script>
+    }
+}

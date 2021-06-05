@@ -1,0 +1,33 @@
+﻿@model Web.ViewModels.Lending.LendingFineViewModel
+@{
+    ViewData["Title"] = ViewResource.Fine;
+}
+
+<h1>@ViewResource.Fine</h1>
+
+<h2>@ViewResource.PayFineOf @Html.DisplayFor(model => model.Fine) @ViewResource.toContinue.</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="@nameof(MVC.Lending.ReturnFine)">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BookBarcode" />
+            <input type="hidden" asp-for="Fine" />
+            <div class="form-group">
+                <label asp-for="PaidAmount" class="control-label"></label>
+                <input asp-for="PaidAmount" class="form-control" />
+                <span asp-validation-for="PaidAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@ViewResource.Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<div>
+    <a asp-controller="@nameof(MVC.Home)" asp-action="@nameof(MVC.Home.LendingMenu)">@ViewResource.BackToMenu</a>
+</div>

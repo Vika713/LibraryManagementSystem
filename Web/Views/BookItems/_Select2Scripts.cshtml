@@ -1,0 +1,57 @@
+﻿<script>
+        $(document).ready(function () {
+            $("#RackNumber").select2({
+                allowClear: true,
+                placeholder: "Select a value",
+                width: '50%',
+                ajax: {
+                    url: '@Url.Action(nameof(MVC.BookItems.GetRackNumberSuggestions), nameof(MVC.BookItems))',
+                    data: function (params) {
+                        var queryParameters = {
+                            Query: params.term
+                        };
+                        return queryParameters;
+                    },
+                    dataType: "json",
+                    cache: true,
+                    delay: 250,
+                    contentType: "application/json; charset=utf-8",
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data, function (val) {
+                                return { id: val.id, text: val.name };
+                            }),
+                        };
+                    }
+                }
+            })
+        });
+
+        $(document).ready(function () {
+            $("#LocationIdentifier").select2({
+                allowClear: true,
+                placeholder: "Select a value",
+                width: '50%',
+                ajax: {
+                    url: '@Url.Action(nameof(MVC.BookItems.GetLocationIdentifierSuggestions), nameof(MVC.BookItems))',
+                    data: function (params) {
+                        var queryParameters = {
+                            Query: params.term
+                        };
+                        return queryParameters;
+                    },
+                    dataType: "json",
+                    cache: true,
+                    delay: 250,
+                    contentType: "application/json; charset=utf-8",
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data, function (val) {
+                                return { id: val.id, text: val.name };
+                            }),
+                        };
+                    }
+                }
+            })
+        });
+</script>

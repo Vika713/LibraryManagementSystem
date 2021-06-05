@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = ViewResource.AccountStatusChangeMessage;
+}
+
+<h4>@ViewResource.AccountStatusWasChanged.</h4>
+<hr />
+
+<div>
+    <a asp-controller="@nameof(MVC.People)" asp-action="@nameof(MVC.People.Index)">@ViewResource.People</a>
+</div>

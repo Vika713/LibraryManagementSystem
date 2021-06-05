@@ -1,0 +1,90 @@
+﻿@model Web.ViewModels.People.PersonEditViewModel
+
+@{
+    ViewData["Title"] = @ViewResource.EditPerson;
+}
+
+<h1>@ViewResource.Edit</h1>
+
+<h4>@ViewResource.Person</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="@nameof(MVC.People.Edit)">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PersonalCode" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" readonly="@(true)" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StreetAddress" class="control-label"></label>
+                <input asp-for="StreetAddress" class="form-control" />
+                <span asp-validation-for="StreetAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ZipCode" class="control-label"></label>
+                <input asp-for="ZipCode" class="form-control" />
+                <span asp-validation-for="ZipCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <input asp-for="Country" class="form-control" />
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+            {
+                @if (Model.IsMember == false)
+                {
+                    <input type="checkbox" asp-for="@Model.Member" />
+                    @ViewResource.RegisterAsMember
+                    <br />
+                }
+            }
+            @if (User.IsInRole(Roles.Admin))
+            {
+                @if (Model.IsLibrarian == false)
+                {
+                    <input type="checkbox" asp-for="@Model.Librarian" />
+                    @ViewResource.RegisterAsLibrarian
+                    <br />
+                }
+            }
+            <div class="form-group">
+                <input type="submit" value="@ViewResource.Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<div>
+    @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+    {
+        <a asp-action="@nameof(MVC.People.Index)">@ViewResource.People</a>
+        @:|
+    }
+    <a asp-action="@nameof(MVC.People.Details)" asp-route-id="@Model.Id">@ViewResource.Details</a>
+</div>

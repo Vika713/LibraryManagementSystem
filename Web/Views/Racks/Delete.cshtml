@@ -1,0 +1,39 @@
+﻿@model Web.ViewModels.Racks.RackDeleteViewModel
+
+@{
+    ViewData["Title"] = ViewResource.DeleteRack;
+}
+
+<h1>@ViewResource.Delete</h1>
+
+<h4>@ViewResource.Rack</h4>
+<hr />
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RackNumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.RackNumber)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LocationIdentifier)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LocationIdentifier)
+        </dd>
+    </dl>
+
+    <form asp-action="@nameof(MVC.Racks.Delete)">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="RackNumber" />
+        <input type="hidden" asp-for="LocationIdentifier" />
+        <input type="submit" value="@ViewResource.Delete" class="btn btn-danger" />
+    </form>
+</div>
+
+<hr />
+
+<div>
+    <a asp-action="@nameof(MVC.Racks.Index)">@ViewResource.Racks</a>
+</div>

@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = ViewResource.LendingMessage;
+}
+
+<h4>@ViewResource.BookReturned</h4>
+
+<hr />
+
+<div>
+    <a asp-controller="@nameof(MVC.Home)" asp-action="@nameof(MVC.Home.LendingMenu)">@ViewResource.BackToMenu</a>
+</div>

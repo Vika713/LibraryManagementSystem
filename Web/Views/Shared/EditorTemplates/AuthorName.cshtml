@@ -1,0 +1,17 @@
+﻿@model Web.ViewModels.Books.AuthorName
+
+<div class="row">
+    <div class="col-md-4">
+        <label asp-for="Name" class="control-label"></label>
+    </div>
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <input asp-for="Name" class="form-control authorNameInput" style="min-width:100%" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-sd-4">
+        <input class="btn btn-light" type="button" id="btnRemove" value="@ViewResource.Remove" />
+    </div>
+</div>

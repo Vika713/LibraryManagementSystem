@@ -1,0 +1,36 @@
+﻿@model Web.ViewModels.Racks.RackCreateViewModel
+
+@{
+    ViewData["Title"] = ViewResource.CreateRack;
+}
+
+<h1>@ViewResource.Create</h1>
+
+<h4>@ViewResource.Rack</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="@nameof(MVC.Racks.Create)">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="LocationIdentifier" class="control-label"></label>
+                <input asp-for="LocationIdentifier" class="form-control" />
+                <span asp-validation-for="LocationIdentifier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RackNumber" class="control-label"></label>
+                <input asp-for="RackNumber" class="form-control" />
+                <span asp-validation-for="RackNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@ViewResource.Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<div>
+    <a asp-action="@nameof(MVC.Racks.Index)">@ViewResource.Racks</a>
+</div>

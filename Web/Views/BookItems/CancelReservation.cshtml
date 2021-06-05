@@ -1,0 +1,33 @@
+﻿@model Web.ViewModels.BookItems.BookItemReservationCancelViewModel
+@{
+    ViewData["Title"] = @ViewResource.CancelReservation;
+}
+
+<h1>@ViewResource.CancelReservation</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="@nameof(MVC.BookItems.CancelReservation)">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BookItemId" />
+            <input type="hidden" asp-for="BookId" />
+            <input type="hidden" asp-for="MemberId" />
+            <div class="form-group">
+                <input type="submit" value="@ViewResource.Cancel" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<a asp-controller="@nameof(MVC.Books)" asp-action="@nameof(MVC.Books.Index)">@ViewResource.Books</a>
+
+@if (Model.HasOtherBookItems == true)
+{
+    @:|
+    <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.IndexByBook)" asp-route-id="@Model.BookId">@ViewResource.OtherBookItems</a>
+}
+
+| <a asp-controller="@nameof(MVC.Members)" asp-action="@nameof(MVC.Members.Details)" asp-route-id="@Model.MemberId">@ViewResource.MemberDetails</a>

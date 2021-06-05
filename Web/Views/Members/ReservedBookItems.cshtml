@@ -1,0 +1,85 @@
+﻿@model Web.ViewModels.Members.MembersReserveViewModel
+
+@{
+    ViewData["Title"] = @ViewResource.ReservedBookItems;
+}
+<h1>@ViewResource.BookItems</h1>
+
+<h4>@ViewResource.Member</h4>
+<hr />
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+    </dl>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReservedBookItems[0].Barcode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReservedBookItems[0].ISBN)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReservedBookItems[0].Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReservedBookItems[0].AuthorsNames)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReservedBookItems[0].Format)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ReservedBookItems)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Barcode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ISBN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @foreach (string author in item.AuthorsNames)
+                        {
+                            @Html.DisplayFor(modelItem => author)
+                            if (author.Equals(item.AuthorsNames.Last()) == false)
+                            {
+                                <br>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Format)
+                    </td>
+                    <td>
+
+                        <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.CancelReservation)" asp-route-id="@item.BookItemId">@ViewResource.CancelReservation</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<hr />
+
+<div>
+    @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+    {
+        <a asp-controller="@nameof(MVC.People)" asp-action="@nameof(MVC.People.Index)">@ViewResource.People</a>
+        @:|
+    }
+    <a asp-controller="@nameof(MVC.Members)" asp-action="@nameof(MVC.People.Details)" asp-route-id="@Model.Id">@ViewResource.MemberDetails</a>
+</div>

@@ -1,0 +1,119 @@
+﻿@model Web.ViewModels.Members.MemberDetailsViewModel
+
+@{
+    ViewData["Title"] = ViewResource.MemberDetails;
+}
+<h1>@ViewResource.Details</h1>
+
+<h4>@ViewResource.Member</h4>
+<hr />
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AccountStatus)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AccountStatus)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DateOfMembership)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DateOfMembership)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BorrowedBooks)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BorrowedBooks)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReservedBooks)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReservedBooks)
+        </dd>
+        @if (Model.CardNumber != null)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CardNumber)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CardNumber)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CardBarcode)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CardBarcode)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CardIssueDate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CardIssueDate)
+            </dd>
+        }
+    </dl>
+</div>
+
+<hr />
+
+<div>
+    @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+    {
+        <a asp-controller="@nameof(MVC.Members)" asp-action="@nameof(MVC.Members.AccountStatusChange)" asp-route-id="@Model.Id">@ViewResource.ChangeAccountStatus</a>
+
+        @if (Model.AccountStatus == Common.Enumeration.MemberStatus.Active)
+        {
+            @:|
+            <a asp-controller="@nameof(MVC.Cards)" asp-action="@nameof(MVC.Cards.Create)" asp-route-id="@Model.Id">@ViewResource.AddACard</a>
+        }
+    }
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model.Id, OperationAuthorizationRequirements.CardBlock)).Succeeded && Model.CardNumber != null)
+    {
+        if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+        {
+            @:|
+        }
+
+        <a asp-controller="@nameof(MVC.Cards)" asp-action="@nameof(MVC.Cards.Block)" asp-route-id="@Model.Id">@ViewResource.BlockACard</a>
+    }
+
+    <br />
+
+    @if (Model.BorrowedBooks != 0)
+    {
+        <a asp-action="@nameof(MVC.Members.BorrowedBookItems)" asp-route-id="@Model.Id">@ViewResource.BorrowedBooks</a>
+    }
+    @if (Model.BorrowedBooks != 0 && Model.ReservedBooks != 0)
+    {
+        @:|
+    }
+    @if (Model.ReservedBooks != 0)
+    {
+        <a asp-action="@nameof(MVC.Members.ReservedBookItems)" asp-route-id="@Model.Id">@ViewResource.ReservedBooks</a>
+    }
+
+    <br />
+
+    @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+    {
+        <a asp-controller="@nameof(MVC.People)" asp-action="@nameof(MVC.People.Index)">@ViewResource.People</a>
+    }
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model.PersonId, OperationAuthorizationRequirements.PersonDetails)).Succeeded)
+    {
+        @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+        {
+            @:|
+        }
+        <a asp-controller="@nameof(MVC.People)" asp-action="@nameof(MVC.People.Details)" asp-route-id="@Model.PersonId">@ViewResource.PersonDetails</a>
+    }
+</div>

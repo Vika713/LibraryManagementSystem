@@ -1,0 +1,142 @@
+﻿@model Web.ViewModels.Racks.RacksIndexViewModel
+
+@{
+    ViewData["Title"] = ViewResource.Index;
+}
+
+<h1>@ViewResource.Racks</h1>
+
+<p>
+    <a asp-action="@nameof(MVC.Racks.Create)">@ViewResource.CreateNew</a>
+</p>
+
+<form asp-action="@nameof(MVC.Racks.Index)" method="get">
+    <div class="form-actions no-color">
+        <p>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NumberFilter" class="control-label"></label>
+                <input asp-for="NumberFilter" class="form-control" />
+                <span asp-validation-for="NumberFilter" class="text-danger"></span>
+                <a asp-route-NumberFilter="@(Model.NumberFilter)"></a>
+            </div>
+            <div class="form-group">
+                <label asp-for="LocationIdFilter" class="control-label"></label>
+                <input asp-for="LocationIdFilter" class="form-control" />
+                <span asp-validation-for="LocationIdFilter" class="text-danger"></span>
+                <a asp-route-LocationIdFilter="@(Model.LocationIdFilter)"></a>
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="PageSize" />
+                <a asp-route-PageSize="@(Model.PageSize)"></a>
+            </div>
+            <input type="submit" value="@ViewResource.Filter" class="btn btn-secondary" />
+        </p>
+    </div>
+</form>
+
+<p>
+    @ViewResource.PageSize
+    @Html.DropDownList(
+        "pageSize", Model.PageSizes as List<SelectListItem>,
+        new
+        {
+            onchange = "SelectionChanged()",
+            pageSize = "pageSize"
+        })
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].LocationIdentifier)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Index[0].RackNumber)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Index)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LocationIdentifier)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RackNumber)
+                </td>
+                <td>
+                    @if (item.HasBookItems)
+                    {
+                        <a asp-controller="@nameof(MVC.BookItems)" asp-action="@nameof(MVC.BookItems.IndexByRack)" asp-route-id="@item.Id">@ViewResource.BookItems</a>
+                        @:|
+                        <a asp-controller="@nameof(MVC.Racks)" asp-action="@nameof(MVC.Racks.Edit)" asp-route-id="@item.Id">@ViewResource.Edit</a>
+
+                    }
+                    @if (item.HasBookItems && User.IsInRole(Roles.Admin))
+                    {
+                        @:|
+                    }
+                    @if (User.IsInRole(Roles.Admin))
+                    {
+
+                        <a asp-controller="@nameof(MVC.Racks)" asp-action="@nameof(MVC.Racks.Delete)" asp-route-id="@item.Id">@ViewResource.Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="@nameof(MVC.Racks.Index)" method="get"
+   asp-route-NumberFilter="@(Model.NumberFilter)"
+   asp-route-LocationIdFilter="@(Model.LocationIdFilter)"
+   asp-route-PageNumber="@(Model.PageIndex - 1)"
+   asp-route-PageSize="@(Model.PageSize)"
+   class="btn btn-default @prevDisabled">
+    @ViewResource.Previous
+</a>
+
+<a asp-action="@nameof(MVC.Racks.Index)" method="get"
+   asp-route-NumberFilter="@(Model.NumberFilter)"
+   asp-route-LocationIdFilter="@(Model.LocationIdFilter)"
+   asp-route-PageNumber="@(Model.PageIndex + 1)"
+   asp-route-PageSize="@(Model.PageSize)"
+   class="btn btn-default @nextDisabled">
+    @ViewResource.Next
+</a>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @if (Model.NumberFilter == null && Model.LocationIdFilter == null)
+    {
+        <script>
+
+             function SelectionChanged()
+             {
+                 window.location = '@Url.Action(nameof(MVC.Racks.Index), nameof(MVC.Racks))' +
+                         '?PageSize=' + $("#pageSize").val();
+             }
+        </script>
+    }
+    else
+    {
+        <script>
+
+             function SelectionChanged()
+             {
+                     window.location = '@Url.Action(nameof(MVC.Racks.Index), nameof(MVC.Racks),
+                new { Model.NumberFilter, Model.LocationIdFilter })' +
+                     '&PageSize=' + $("#pageSize").val();
+             }
+        </script>
+    }
+}

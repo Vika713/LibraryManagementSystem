@@ -1,0 +1,73 @@
+﻿@model Web.ViewModels.People.PersonCreateViewModel
+@{
+    ViewData["Title"] = ViewResource.CreatePerson;
+}
+
+<h1>@ViewResource.Create</h1>
+
+<h4>@ViewResource.Person</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="@nameof(MVC.People.Create)">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="PersonalCode" class="control-label"></label>
+                <input asp-for="PersonalCode" class="form-control" />
+                <span asp-validation-for="PersonalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StreetAddress" class="control-label"></label>
+                <input asp-for="StreetAddress" class="form-control" />
+                <span asp-validation-for="StreetAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ZipCode" class="control-label"></label>
+                <input asp-for="ZipCode" class="form-control" />
+                <span asp-validation-for="ZipCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <input asp-for="Country" class="form-control" />
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            <input type="checkbox" asp-for="@Model.Member" /> @ViewResource.RegisterAsMember
+            <br />
+            <input type="checkbox" asp-for="@Model.Librarian" /> @ViewResource.RegisterAsLibrarian
+            <div class="form-group">
+                <input type="submit" value="@ViewResource.Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<div>
+    <a asp-action="@nameof(MVC.People.Index)">@ViewResource.People</a>
+</div>

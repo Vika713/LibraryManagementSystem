@@ -1,0 +1,55 @@
+﻿@model Web.ViewModels.Cards.CardBlockViewModel
+
+@{
+    ViewData["Title"] = ViewResource.BlockCard;
+}
+
+<h1>@ViewResource.Block</h1>
+
+<h4>@ViewResource.Card</h4>
+<hr />
+<form asp-action="@nameof(MVC.Cards.Block)">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PersonId" />
+    <input type="hidden" asp-for="MemberId" />
+    <div class="form-group">
+        <label asp-for="Number" class="control-label"></label>
+        <input asp-for="Number" class="form-control" readonly="@(true)" />
+    </div>
+    <div class="form-group">
+        <label asp-for="MemberCode" class="control-label"></label>
+        <input asp-for="MemberCode" class="form-control" readonly="@(true)" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="@ViewResource.Block" class="btn btn-danger" />
+    </div>
+</form>
+
+<hr />
+
+<div>
+    @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+    {
+        <a asp-controller="@nameof(MVC.People)" asp-action="@nameof(MVC.People.Index)">@ViewResource.People</a>
+    }
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model.PersonId, OperationAuthorizationRequirements.PersonDetails)).Succeeded)
+    {
+        @if (User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin))
+        {
+            @:|
+        }
+        <a asp-controller="@nameof(MVC.People)" asp-action="@nameof(MVC.People.Details)" asp-route-id="@Model.PersonId">@ViewResource.PersonDetails</a>
+    }
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model.MemberId, OperationAuthorizationRequirements.MemberDetails)).Succeeded)
+    {
+        @if ((User.IsInRole(Roles.Librarian) || User.IsInRole(Roles.Admin)) ||
+       (await AuthorizationService.AuthorizeAsync(User, Model.PersonId, OperationAuthorizationRequirements.PersonDetails)).Succeeded)
+        {
+            @:|
+        }
+        <a asp-controller="@nameof(MVC.Members)" asp-action="@nameof(MVC.Members.Details)" asp-route-id="@Model.MemberId">@ViewResource.MemberDetails</a>
+    }
+</div>
