@@ -66,21 +66,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
         <partial name="_AuthorNameScripts" />
-    @*<script type="text/javascript">
-        $("#btnAdd").on('click', function () {
-            $.ajax({
-                async: true,
-                data: $('#form').serialize(),
-                type: "POST",
-                url: '@Url.Action(nameof(MVC.Books.AddAuthorName), nameof(MVC.Books))',
-                success: function (partialView) {
-                    $('#authorsNamesContainer').html(partialView);
-                }
-            });
-        });
-
-        $(document).on('click', "#btnRemove", function (event) {
-            $(event.currentTarget).closest('.row').remove();
-        });
-    </script>*@
 }
